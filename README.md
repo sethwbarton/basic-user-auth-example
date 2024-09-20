@@ -78,11 +78,11 @@ Fill in the details for the connection to your database according to what you ch
 
 Mine looked something like this:
 
-![CleanShot 2024-09-20 at 10.30.18.png](docs/images/CleanShot%202024-09-20%20at%2010.30.18.png)
+![db_connection_settings](https://github.com/user-attachments/assets/bffc87a6-1570-4441-ad44-54f94a54bd2b)
 
 You then need to select which database or "schema" you'll do queries against in the side panel.
 
-![CleanShot 2024-09-20 at 10.35.11.png](docs/images/CleanShot%202024-09-20%20at%2010.35.11.png)
+![db_schema_selection](https://github.com/user-attachments/assets/31fc8e88-be60-4dc9-a000-cf45d99ae3f9)
 
 Now it's time to create tables for your database.
 
