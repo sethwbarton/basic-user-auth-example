@@ -1,7 +1,25 @@
 import Head from "next/head";
 import styles from "@/styles/Home.module.css";
+import {useMutation} from '@tanstack/react-query';
+import axios from 'axios';
 
 export default function Home() {
+  const signUpMutation = useMutation({
+    mutationFn: (signUpData) => {
+      return axios.post('/api/sign-up', signUpData)
+    },
+  })
+
+  function submitSignUp(e) {
+    e.preventDefault();
+    signUpMutation.mutate({email: "something@something.com", password: "somePassword"})
+  }
+
+  function submitSignIn(e) {
+    e.preventDefault();
+    console.log("IMPLEMENT ME!")
+  }
+
   return (
     <>
       <Head>
@@ -12,7 +30,7 @@ export default function Home() {
       </Head>
         <main className={styles.main}>
           <h1>Sign Up</h1>
-          <form className={styles.form}>
+          <form className={styles.form} onSubmit={submitSignUp}>
             <label htmlFor="email-input">Email</label>
             <input type={"email"}/>
             <label htmlFor="password-input">Password</label>
@@ -20,7 +38,7 @@ export default function Home() {
             <button type={'submit'}> Create My Account</button>
           </form>
           <h1>Sign In</h1>
-          <form className={styles.form}>
+          <form className={styles.form} onSubmit={submitSignIn}>
             <label htmlFor="email-input">Email</label>
             <input type={"email"} />
             <label htmlFor="password-input">Password</label>

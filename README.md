@@ -56,15 +56,15 @@ You can do this most easily by installing the MySQL Server application from Orac
 https://dev.mysql.com/downloads/mysql/8.0.html
 
 Pick a password you'll remember for the root user when you setup the SQL server. 
-Or store your password in a secure place. You'll need it in a second.
+Store your password in a secure, common place. You'll need it in a second.
 
-Now, with MySQL installed, we need to create a database: 
+Now, with MySQL installed, we need to create a database and allow password-based auth for the root user: 
 
 ```bash
-mysql -u root -p -e "CREATE DATABASE user_auth_example;"
+mysql -u root -p -e "CREATE DATABASE user_auth_example; ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY '<your root db user password>'"
 ```
 
-This command will prompt you for the password you just set for the root user for your MySQL instance.
+This command will prompt you for the password you just set for the root user for your MySQL instance. Just keep using the same password.
 
 Once your database has been created, you can set up a connection to it right inside of IntelliJ or WebStorm.
 
@@ -92,6 +92,22 @@ If you need to reset the table for any reason, you can run the `nuke_tables` scr
 need to run the creation script again.
 
 With the JetBrains database plugin installed, you should be able to do all if this easily within your editor's UI.
+
+## Environment Variable Setup
+
+Fill in the following information for your database in a new file called `.env` in the root of the project.
+
+```
+MYSQL_HOST=localhost
+MYSQL_PORT=3306
+MYSQL_DATABASE=user_auth_example
+MYSQL_USER=root
+MYSQL_PASSWORD=<your password here>
+```
+
+These variables will get loaded into the Next server code to be accessed through `process.env`.
+
+Read about Next.js environment variables: https://nextjs.org/docs/pages/building-your-application/configuring/environment-variables
 
 # Let's Get Coding!
 
@@ -140,7 +156,7 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 
 You can start editing the page by modifying `pages/index.js`. The page auto-updates as you edit the file.
 
-[API routes](https://nextjs.org/docs/api-routes/introduction) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.js`.
+[API routes](https://nextjs.org/docs/api-routes/introduction) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/sign-up.js`.
 
 The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
 
