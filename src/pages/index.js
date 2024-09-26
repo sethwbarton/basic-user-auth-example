@@ -10,14 +10,20 @@ export default function Home() {
     },
   })
 
+  const signInMutation = useMutation({
+    mutationFn: (signInData) => {
+      return axios.post('/api/sign-in', signInData)
+    },
+  })
+
   function submitSignUp(e) {
     e.preventDefault();
     signUpMutation.mutate({email: e.target[0].value, password: e.target[1].value})
   }
 
-  function submitSignIn(e) {
+  async function submitSignIn(e) {
     e.preventDefault();
-    console.log("IMPLEMENT ME!")
+    signInMutation.mutate({email: e.target[0].value, password: e.target[1].value})
   }
 
   return (

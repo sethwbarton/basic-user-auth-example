@@ -32,12 +32,11 @@ Especially the HttpOnly, SameSite, and Secure options. Even with these options
 properly set, JWT storage on the client is not a clear-cut topic. In the real world,
 it would be better to let a well-supported library handle these complexities for you.
 **/
-
 export default async function handler(req, res) {
   if (req.method !== 'POST') res.status(404).send('Not Found')
 
   const newUserEmail = req.body.email
-  const newUserPassword = req.body.email
+  const newUserPassword = req.body.password
   const newUserId = crypto.randomUUID()
 
   try {
@@ -46,7 +45,6 @@ export default async function handler(req, res) {
 
     const saltedAndHashedPassword = createHash('sha256').
         update(newUserPassword + salt).digest('base64')
-
 
     // TODO: Handle users that already exist.
     await doDbQuery({query: "INSERT INTO Users (id, email, password, salt)  VALUES (?, ?, ?, ?)",
@@ -61,7 +59,7 @@ export default async function handler(req, res) {
   res.status(200).send('Successfully created new account for ' + newUserEmail)
 }
 
-function generateAndSignJwt(userEmail, newUserId) {
+export function generateAndSignJwt(userEmail, newUserId) {
   const header ={
     "alg": "HS256",
     "typ": "JWT"

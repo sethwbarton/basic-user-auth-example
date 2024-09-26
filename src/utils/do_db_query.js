@@ -1,5 +1,13 @@
 import mysql from "mysql";
 
+let pool = mysql.createPool({
+  host: process.env.MYSQL_HOST,
+  port: process.env.MYSQL_PORT,
+  database: process.env.MYSQL_DATABASE,
+  user: process.env.MYSQL_USER,
+  password: process.env.MYSQL_PASSWORD
+});
+
 /**
  *
  * Use this function to make SQL statements run against your database.
@@ -15,17 +23,10 @@ import mysql from "mysql";
  * @returns {Promise<Query>}
  */
 export default async function doDbQuery({ query, values }) {
-  let connection = mysql.createConnection({
-    host: process.env.MYSQL_HOST,
-    port: process.env.MYSQL_PORT,
-    database: process.env.MYSQL_DATABASE,
-    user: process.env.MYSQL_USER,
-    password: process.env.MYSQL_PASSWORD
-  });
-  await connection.connect()
-
-  const queryResults = await connection.query({sql: query, values});
-
-  await connection.end();
-  return queryResults;
+  return new Promise((resolve, reject) => {
+    pool.query({sql: query, values}, (error, results) => {
+      if (error) reject(error)
+      else resolve(results)
+    });
+  })
 }
