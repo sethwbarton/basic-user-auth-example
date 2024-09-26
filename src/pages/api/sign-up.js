@@ -55,7 +55,9 @@ export default async function handler(req, res) {
     res.status(500).send('Internal Server Error')
   }
 
-  res.setHeader("Set-Cookie", `session_token=${generateAndSignJwt(newUserEmail, newUserId)}; HttpOnly; SameSite=Strict; Secure;`);
+  // See https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie
+  // for information about what all the cookie options do.
+  res.setHeader("Set-Cookie", `session_token=${generateAndSignJwt(newUserEmail, newUserId)}; HttpOnly; SameSite=Strict; Secure; Max-Age=900; Path=/`);
   res.status(200).send('Successfully created new account for ' + newUserEmail)
 }
 

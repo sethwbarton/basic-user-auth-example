@@ -2,8 +2,11 @@ import Head from "next/head";
 import styles from "@/styles/Home.module.css";
 import {useMutation} from '@tanstack/react-query';
 import axios from 'axios';
+import {useRouter} from 'next/router';
 
 export default function Home() {
+  const router = useRouter()
+
   const signUpMutation = useMutation({
     mutationFn: (signUpData) => {
       return axios.post('/api/sign-up', signUpData)
@@ -16,12 +19,16 @@ export default function Home() {
     },
   })
 
+  if (signInMutation.isSuccess) {
+    router.push('/authenticated')
+  }
+
   function submitSignUp(e) {
     e.preventDefault();
     signUpMutation.mutate({email: e.target[0].value, password: e.target[1].value})
   }
 
-  async function submitSignIn(e) {
+  function submitSignIn(e) {
     e.preventDefault();
     signInMutation.mutate({email: e.target[0].value, password: e.target[1].value})
   }

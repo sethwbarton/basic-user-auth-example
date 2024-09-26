@@ -20,7 +20,7 @@ export default async function handler(req, res) {
 
     if (hashToTest === realHash) {
       const jwt = generateAndSignJwt(userFromDb.email, userFromDb.id)
-      res.setHeader("Set-Cookie", `session_token=${jwt}; HttpOnly; SameSite=Strict; Secure;`);
+      res.setHeader("Set-Cookie", `session_token=${jwt}; HttpOnly; SameSite=Strict; Secure; Max-Age=900; Path=/`);
       res.status(200).send()
     }
 
