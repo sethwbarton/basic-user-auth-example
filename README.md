@@ -103,6 +103,7 @@ MYSQL_PORT=3306
 MYSQL_DATABASE=user_auth_example
 MYSQL_USER=root
 MYSQL_PASSWORD=<your password here>
+JWT_SECRET=some_secret_string
 ```
 
 These variables will get loaded into the Next server code to be accessed through `process.env`.

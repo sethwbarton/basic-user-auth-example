@@ -1,12 +1,36 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
-
 import {createHash} from 'node:crypto';
 import doDbQuery from '@/utils/do_db_query';
 import * as crypto from 'crypto';
+import {encodeToBase64} from 'next/dist/build/webpack/loaders/utils';
 
 /**
-Great article on salting and storing passwords:
+Here are some articles that go over things you'll need to understand before
+successfully implementing sign up:
+
+Great article on salting, hashing, and storing passwords:
 https://auth0.com/blog/adding-salt-to-hashing-a-better-way-to-store-passwords/
+
+Explains how JWT's work in moderate detail:
+https://jwt.io/introduction
+
+It could be educational to implement the algorithm you read about on that
+website yourself, but if you don't want to you can use a library.
+
+This project has the jsonwebtoken library pre-installed for you to use.
+Learn about it here:
+
+https://www.npmjs.com/package/jsonwebtoken
+
+You'll need to understand a bit about how setting cookies works between the
+browser and server. Here is a useful doc to read about that:
+
+https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie
+
+The various options for setting a cookie in the browser are critical for security.
+Especially the HttpOnly, SameSite, and Secure options. Even with these options
+properly set, JWT storage on the client is not a clear-cut topic. In the real world,
+it would be better to let a well-supported library handle these complexities for you.
 **/
 
 export default async function handler(req, res) {
@@ -14,15 +38,17 @@ export default async function handler(req, res) {
 
   const newUserEmail = req.body.email
   const newUserPassword = req.body.email
+  const newUserId = crypto.randomUUID()
 
   try {
+
     const salt =  crypto.randomBytes(16).toString('base64');
 
     const saltedAndHashedPassword = createHash('sha256').
         update(newUserPassword + salt).digest('base64')
 
-    const newUserId = crypto.randomUUID()
 
+    // TODO: Handle users that already exist.
     await doDbQuery({query: "INSERT INTO Users (id, email, password, salt)  VALUES (?, ?, ?, ?)",
       values: [newUserId, newUserEmail, saltedAndHashedPassword, salt]})
 
@@ -31,5 +57,25 @@ export default async function handler(req, res) {
     res.status(500).send('Internal Server Error')
   }
 
+  res.setHeader("Set-Cookie", `session_token=${generateAndSignJwt(newUserEmail, newUserId)}; HttpOnly; SameSite=Strict; Secure;`);
   res.status(200).send('Successfully created new account for ' + newUserEmail)
+}
+
+function generateAndSignJwt(userEmail, newUserId) {
+  const header ={
+    "alg": "HS256",
+    "typ": "JWT"
+  }
+  const headerEncoded = encodeToBase64(header.toString())
+
+  const payload = {
+    "sub": `${newUserId}`,
+    "email": `${userEmail}`,
+  }
+  const payloadEncoded = encodeToBase64(payload.toString())
+
+  const signature = createHash('sha256').update(headerEncoded + "." + payloadEncoded + process.env.JWT_SECRET)
+  const signatureEncoded = encodeToBase64(signature.toString())
+
+  return headerEncoded + "." + payloadEncoded + "." + signatureEncoded
 }

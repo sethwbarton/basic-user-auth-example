@@ -12,7 +12,7 @@ export default function Home() {
 
   function submitSignUp(e) {
     e.preventDefault();
-    signUpMutation.mutate({email: "something@something.com", password: "somePassword"})
+    signUpMutation.mutate({email: e.target[0].value, password: e.target[1].value})
   }
 
   function submitSignIn(e) {
