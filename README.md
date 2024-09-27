@@ -13,12 +13,9 @@ it's not even the most secure, but it works for signing people in and it illustr
 You'll learn about the following topics:
 
 - Token-based authentication
-- Session-based authentication
-- The pros and cons of token and session-based authentication.
-- Cookies vs session storage vs local storage in the browser
+- Cookies and cookie-browser-server relationship.
 - Password salting and hashing.
 - Next.js
-- The server / client relationship
 - Communicating with a Database
 
 We won't dive into these topics in excessive detail, but you should gain a high level understanding which you can 
@@ -115,65 +112,9 @@ Read about Next.js environment variables: https://nextjs.org/docs/pages/building
 With all that setup out of the way, we're ready to take a look at the code and what it is we'll be building.
 The goal of all of this is to learn how web authentication works by doing it ourselves. What we're building
 is NOT sufficiently secure to go into users' hands. It's not feature complete. And it doesn't necessarily follow best practices,
-but it does illustrate how authentication works. 
+but it does illustrate how authentication works generally. 
 
 We'll use Next.js to build a full-stack application that allows users to register an account, login, and log out, with 
 bonus points if you can implement the change password feature.
 
 We're going to implement these features two ways: with JWT (token) authentication, and session-based authentication.
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
-
-## Getting Started
-
-First, run the development server:
-
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
-
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `pages/index.js`. The page auto-updates as you edit the file.
-
-[API routes](https://nextjs.org/docs/api-routes/introduction) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/sign-up.js`.
-
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
-
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
