@@ -1,5 +1,6 @@
 import styles from "@/styles/Home.module.css";
 import {redirect} from 'next/navigation';
+import {createHash} from 'node:crypto';
 
 /**
  * The challenge is to make it so that only logged in users can see this page.
@@ -16,7 +17,7 @@ export default function Authenticated() {
         <div className={styles.main}>
           <h1>You're logged in!</h1>
           <p>You shouldn't see this page if you aren't</p>
-          {/*TODO: Handle log out*/}
+          {/*TODO: Handle log out by unsetting the JWT and redirecting the user back to the landing page*/}
           <button>Log Out</button>
         </div>
       </>
@@ -24,14 +25,11 @@ export default function Authenticated() {
 }
 
 export async function getServerSideProps(context) {
-  // check the context (should have the user's auth cookie in there) and see if they are logged in.
-  // If they aren't logged in, you'll have to redirect them back to the home page.
-  // const jwt = context.req.cookies
-  console.log("COOKIES")
-  console.log(context.req.cookies);
   const jwt = context.req.cookies.session_token
 
-  if (!jwt) {
+  // If the user doesn't have a token, or the token they have can't be verified,
+  // redirect them before showing them this page.
+  if (!jwt || !isValidJwt(jwt)) {
     return {
       redirect: {
         destination: '/', // The URL to redirect to
@@ -41,4 +39,15 @@ export async function getServerSideProps(context) {
   }
 
   return { props: {}}
+}
+
+function isValidJwt(jwt) {
+  const parts = jwt.split('.')
+  const header = parts[0]
+  const payload = parts[1]
+  const signature = parts[2]
+
+  const correctSignature = createHash('sha256').update(header + "." + payload + process.env.JWT_SECRET).digest('base64')
+
+  return signature === correctSignature
 }

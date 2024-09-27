@@ -21,6 +21,7 @@ export default function Home() {
 
   if (signInMutation.isSuccess) {
     router.push('/authenticated')
+    return <></>;
   }
 
   function submitSignUp(e) {

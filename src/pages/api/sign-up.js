@@ -66,16 +66,15 @@ export function generateAndSignJwt(userEmail, newUserId) {
     "alg": "HS256",
     "typ": "JWT"
   }
-  const headerEncoded = encodeToBase64(header.toString())
+  const headerEncoded = encodeToBase64(JSON.stringify(header))
 
   const payload = {
     "sub": `${newUserId}`,
     "email": `${userEmail}`,
   }
-  const payloadEncoded = encodeToBase64(payload.toString())
+  const payloadEncoded = encodeToBase64(JSON.stringify(payload))
 
-  const signature = createHash('sha256').update(headerEncoded + "." + payloadEncoded + process.env.JWT_SECRET)
-  const signatureEncoded = encodeToBase64(signature.toString())
+  const signatureEncoded = createHash('sha256').update(headerEncoded + "." + payloadEncoded + process.env.JWT_SECRET).digest('base64')
 
   return headerEncoded + "." + payloadEncoded + "." + signatureEncoded
 }
