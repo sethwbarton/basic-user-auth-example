@@ -1,14 +1,14 @@
 # Web Auth Basics Activity
 
-Hello! Welcome to this small activity I've created to help understand the very basics of end-user web authentication.
+Hello! Welcome to this activity I've created to help you understand the very basics of end-user web authentication.
 
-Ideally you'd spend ~4 hours completing what's in this activity. If you want to learn more and make a fully-functional
-full-stack app with this as a template, you are welcome to do so.
+Ideally you'd spend ~4 hours completing what's in this activity and its challenges. If you want to do more and make a 
+fully-functional full-stack app with this as a template, you can also do that.
 
 ## What are we building? 
 
-In this activity, you'll create a fully functioning sign-in system. It doesn't use the latest and greatest technologies,
-it's not even the most secure, but it works for signing people in and it illustrates the most important concepts. 
+In this activity, you'll create a basic sign-in system. It doesn't use the latest and greatest technologies,
+it's not even that secure, but it works for signing people in and out, and it illustrates the important concepts. 
 
 You'll learn about the following topics:
 
@@ -21,7 +21,9 @@ You'll learn about the following topics:
 We won't dive into these topics in excessive detail, but you should gain a high level understanding which you can 
 use to learn these topics in more detail.
 
-## Project Setup
+# Project Setup
+
+## Install Dependencies
 
 First you'll have to make sure you have the dependencies for the project installed:
 
@@ -52,7 +54,10 @@ You can do this most easily by installing the MySQL Server application from Orac
 
 https://dev.mysql.com/downloads/mysql/8.0.html
 
-Pick a password you'll remember for the root user when you setup the SQL server. 
+Pick a password you'll remember for the root user when you set up the MySQL server. In a real-world scenario, this password
+would need to be very strong and closely guarded. And you probably wouldn't even be using password authentication for your
+production database. For this exercise, it's ok to use something basic.
+
 Store your password in a secure, common place. You'll need it in a second.
 
 Now, with MySQL installed, we need to create a database and allow password-based auth for the root user: 
@@ -109,12 +114,118 @@ Read about Next.js environment variables: https://nextjs.org/docs/pages/building
 
 # Let's Get Coding!
 
-With all that setup out of the way, we're ready to take a look at the code and what it is we'll be building.
+With all that setup out of the way, we're ready to take a look at the code and what we'll be building.
 The goal of all of this is to learn how web authentication works by doing it ourselves. What we're building
 is NOT sufficiently secure to go into users' hands. It's not feature complete. And it doesn't necessarily follow best practices,
 but it does illustrate how authentication works generally. 
 
-We'll use Next.js to build a full-stack application that allows users to register an account, login, and log out, with 
-bonus points if you can implement the change password feature.
+# Challenges
 
-We're going to implement these features two ways: with JWT (token) authentication, and session-based authentication.
+This section will guide you through completing the challenges.
+
+The `main` branch has all the challenges complete. You can use this branch as a cheat sheet when you get stuck doing the 
+challenges. But don't use it too much, or you won't learn anything! When you feel the urge to look at it, instead try
+reading about how the feature you're working on should work online.
+
+To get started checkout the `challenges` branch.
+
+```bash
+git checkout challenges
+```
+As you read through the rest of this guide, things to do are marked with checkboxes for you to keep track of where you are.
+
+- [ ] Example checkbox.
+
+## Sign Up
+
+The sign-flow involves two files, `src/pages/index.js` and `src/pages/api/sign-up.js`.
+
+The first file is the default page you land on after starting the app. We'll refer to it as the base page.
+
+The second file is a Next.js API route. You can read more about how those work here: 
+
+https://nextjs.org/docs/pages/building-your-application/routing/api-routes
+
+You need to connect these two JS files by having the page call the sign-up API route when the user submits the sign-up form.
+
+To make this job easier for you, I've installed [TanStack Query](https://tanstack.com/query/latest/docs/framework/react/overview)
+in the project for you. This library makes it easy to do data fetching in React applications. 
+You'll need to read the docs about how to do mutations for this part of the challenge.
+
+- [ ] Handle sign-up form submission on the base page. 
+- [ ] Sign-up form sends email and password to the API route.
+
+Once your frontend is sending data to your Next.js API route, it's time to implement the backend code for storing your
+user in the database and generating a JWT token for them to be stored in the browser as a cookie. First things first,
+let's work on storing that password properly.
+
+- [ ] READ: https://auth0.com/blog/adding-salt-to-hashing-a-better-way-to-store-passwords/
+- [ ] Sign-up API route salts the user's password
+- [ ] Sign-up API route stores the user's salt, salted password, email, and new id, in the DB.
+
+There is a utility function already written for you called `doDbQuery` which I recommend you use for this part.
+
+Next up is generating a token for the user to have in the cookies on their browser. We'll be following (loosely) the JWT
+standard.
+
+- [ ] READ: https://jwt.io/introduction
+- [ ] Sign-up API route generates a token according to the algorithm laid out in the article above.
+
+If you're unsure how to hash things in Node.js, you can refer to this GeeksForGeeks article: https://www.geeksforgeeks.org/node-js-crypto-createhash-method/
+
+Next, you need to send that JWT back to the user as a cookie once their account is created. You can use the `Set-Cookie` http header to do this.
+
+- [ ] READ: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie
+- [ ] The Sign-up API route tells the browser to set a cookie, which persists between page refreshes, and uses the proper options to not get leaked to other sites or bad actors.
+- [ ] The browser successfully sets the cookie after sign up.
+
+Extra points if you read about where the best place to store a JWT _really_ is. Setting JWTs in cookies works, but isn't necessarily the most secure.
+Usually, JWT's get sent in the `Authorization` http header, not cookies.
+
+With the cookie set, you're user is technically signed in. But what if they come back to the page later? They'll need to use the sign-in flow.
+
+## Sign In
+
+Sign-in in does a lot of the same logic as your sign-up API route. But this time it doesn't need to store anything new in the database.
+Instead, we'll be checking the credentials the user sent against the credentials stored in the database.
+
+- [ ] The base page sends a request to the sign-in API route when the user submits the sign in form.
+- [ ] The sign-in API route checks the sent password against the hashed and salted password stored in the DB.
+- [ ] If the passwords match, a token is generated for the user and the token is stored in the cookies.
+- [ ] If the passwords don't match, the API request fails with a 403.
+
+Now that you're sign-in flow properly authenticates users, it's time to allow those users to view the `/authenticated` page if 
+they have the proper token set.
+
+## Creating an Authenticated Page
+
+We'll use the `authenticated.js` page to create our authenticated route. Users should only be able to see this if they have
+successfully signed in.
+
+Before you can successfully implement this in Next.js,  you need to learn a bit about `getServerSideProps`.
+
+- [ ] READ: https://nextjs.org/docs/pages/building-your-application/data-fetching/get-server-side-props
+- [ ] READ: https://nextjs.org/docs/pages/api-reference/functions/get-server-side-props#redirect
+- Redirect the user in `getServerSideProps` if their token isn't set in the page request.
+
+Just checking that the user's token exists isn't enough to secure this page - someone could spoof the token being set.
+Instead, we need to make sure the token is valid; that our application is the one who created it. You can learn how to 
+do this in the JWT introduction I linked earlier. https://jwt.io/introduction
+
+- [ ] The authenticated page checks that the token is valid before sending the page to the user.
+
+## Sign Out
+
+This bit is extra credit as it's not implemented in the `main` branch.
+
+To sign a user out when they click the sign-out button, you need to delete that cookie and redirect them back to the base page.
+Can you find an elegant way to do this? 
+
+- [ ] Clicking the "sign out" button signs users out.
+- [ ] Signed-out users can't access the authenticated page.
+
+
+
+
+
+
