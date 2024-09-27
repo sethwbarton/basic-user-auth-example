@@ -5,33 +5,10 @@ import axios from 'axios';
 import {useRouter} from 'next/router';
 
 export default function Home() {
-  const router = useRouter()
-
-  const signUpMutation = useMutation({
-    mutationFn: (signUpData) => {
-      return axios.post('/api/sign-up', signUpData)
-    },
-  })
-
-  const signInMutation = useMutation({
-    mutationFn: (signInData) => {
-      return axios.post('/api/sign-in', signInData)
-    },
-  })
-
-  if (signInMutation.isSuccess) {
-    router.push('/authenticated')
-    return <></>;
-  }
-
   function submitSignUp(e) {
-    e.preventDefault();
-    signUpMutation.mutate({email: e.target[0].value, password: e.target[1].value})
   }
 
   function submitSignIn(e) {
-    e.preventDefault();
-    signInMutation.mutate({email: e.target[0].value, password: e.target[1].value})
   }
 
   return (

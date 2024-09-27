@@ -35,46 +35,12 @@ it would be better to let a well-supported library handle these complexities for
 export default async function handler(req, res) {
   if (req.method !== 'POST') res.status(404).send('Not Found')
 
-  const newUserEmail = req.body.email
-  const newUserPassword = req.body.password
-  const newUserId = crypto.randomUUID()
+  console.log("GOT SIGN UP REQUEST!", req.body)
 
-  try {
-
-    const salt =  crypto.randomBytes(16).toString('base64');
-
-    const saltedAndHashedPassword = createHash('sha256').
-        update(newUserPassword + salt).digest('base64')
-
-    // TODO: Handle users that already exist.
-    await doDbQuery({query: "INSERT INTO Users (id, email, password, salt)  VALUES (?, ?, ?, ?)",
-      values: [newUserId, newUserEmail, saltedAndHashedPassword, salt]})
-
-  } catch (e) {
-    console.error(e)
-    res.status(500).send('Internal Server Error')
-  }
-
-  // See https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie
-  // for information about what all the cookie options do.
-  res.setHeader("Set-Cookie", `session_token=${generateAndSignJwt(newUserEmail, newUserId)}; HttpOnly; SameSite=Strict; Secure; Max-Age=900; Path=/`);
-  res.status(200).send('Successfully created new account for ' + newUserEmail)
+  // TODO: Salt, hash, and store the user's password, email, and an ID.
+  // TODO: Generate and sign a JWT for the user, send it back using the Set-Cookie header.
 }
 
 export function generateAndSignJwt(userEmail, newUserId) {
-  const header ={
-    "alg": "HS256",
-    "typ": "JWT"
-  }
-  const headerEncoded = encodeToBase64(JSON.stringify(header))
-
-  const payload = {
-    "sub": `${newUserId}`,
-    "email": `${userEmail}`,
-  }
-  const payloadEncoded = encodeToBase64(JSON.stringify(payload))
-
-  const signatureEncoded = createHash('sha256').update(headerEncoded + "." + payloadEncoded + process.env.JWT_SECRET).digest('base64')
-
-  return headerEncoded + "." + payloadEncoded + "." + signatureEncoded
+  // TODO: Implement me!
 }

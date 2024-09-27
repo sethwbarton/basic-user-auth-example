@@ -5,30 +5,10 @@ import {generateAndSignJwt} from '@/pages/api/sign-up';
 export default async function handler(req, res) {
   if (req.method !== 'POST') res.status(404).send('Not Found')
 
-  const userEmail = req.body.email
-  const passwordFromRequest = req.body.password
+  console.log("GOT A SIGN IN REQUEST")
 
-  try {
-    const dbResult = await doDbQuery({query: "SELECT * FROM Users WHERE email = (?)",
-      values: [userEmail]})
-    const userFromDb = dbResult[0]
-
-    const hashToTest = createHash('sha256').
-        update(passwordFromRequest + userFromDb.salt).digest('base64')
-
-    const realHash = userFromDb.password;
-
-    if (hashToTest === realHash) {
-      const jwt = generateAndSignJwt(userFromDb.email, userFromDb.id)
-      res.setHeader("Set-Cookie", `session_token=${jwt}; HttpOnly; SameSite=Strict; Secure; Max-Age=900; Path=/`);
-      res.status(200).send()
-    }
-
-    res.status(403).send('Unauthorized. That was the wrong password!')
-  } catch (e) {
-    console.error(e)
-    res.status(500).send('Internal Server Error')
-  }
-
-  res.status(403).send('Unauthorized. That was the wrong password!')
+  // TODO: Compare the sent password (salted and hashed) to the stored password in the DB.
+  // TODO: Generate and sign a JWT for the user, send it back using the Set-Cookie header.
+  // TODO: If the password isn't right, send the user a 403.
+  // TODO: If something breaks, send them a 500.
 }

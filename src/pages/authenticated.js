@@ -25,29 +25,14 @@ export default function Authenticated() {
 }
 
 export async function getServerSideProps(context) {
-  const jwt = context.req.cookies.session_token
-
-  // If the user doesn't have a token, or the token they have can't be verified,
-  // redirect them before showing them this page.
-  if (!jwt || !isValidJwt(jwt)) {
-    return {
-      redirect: {
-        destination: '/', // The URL to redirect to
-        permanent: true, // Set to true for a permanent redirect (301) or false for a temporary redirect (302)
-      },
-    };
-  }
+  // TODO: Grab the user's auth cookie from the context object.
+  // TODO: Check if the auth cookie is a valid JWT that has this application's signature.
+  // If it is, show the user the page. Otherwise, redirect them back to the base page.
 
   return { props: {}}
 }
 
 function isValidJwt(jwt) {
-  const parts = jwt.split('.')
-  const header = parts[0]
-  const payload = parts[1]
-  const signature = parts[2]
-
-  const correctSignature = createHash('sha256').update(header + "." + payload + process.env.JWT_SECRET).digest('base64')
-
-  return signature === correctSignature
+ // TODO: Implement me!
+ // https://jwt.io/introduction
 }
